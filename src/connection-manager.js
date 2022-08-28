@@ -18,7 +18,8 @@ export default class ConnectionManager {
     }
   }
 
-  connect (playerName, sessionId, wager, numPlayers, rounds, playerType, connectionClosedCallback, onMessageCallback) {
+  connect (playerName, sessionId, wager, numPlayers, rounds, ctc, connectionClosedCallback, onMessageCallback) {
+
     this.initSocket()
     this.send('join-session', {
       sessionId: sessionId,
@@ -26,8 +27,8 @@ export default class ConnectionManager {
       sessionWager: wager,
       sessionNumP: numPlayers,
       sessionRounds: rounds,
-      playerType: playerType,
-      game: 'spy',
+      sessionCtc: ctc,
+      game: 'spy'
     })
 
     this.socket.on('disconnect', () => {

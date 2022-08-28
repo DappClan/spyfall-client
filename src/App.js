@@ -8,8 +8,9 @@ import ConnectionManager from './connection-manager.js'
 import Locations from './Locations'
 import Menu from './Menu/Menu'
 import Error from './Error'
-import { loadStdlib, ALGO_MyAlgoConnect as MyAlgo } from '@reach-sh/stdlib'
-import * as backend from './build/index.main.mjs'
+import {loadStdlib} from '@reach-sh/stdlib';
+import * as backend from './build/index.main.mjs';
+const stdlib = loadStdlib();
 
 const gameDuration = 300
 const reach = loadStdlib('ALGO')
@@ -27,16 +28,8 @@ function App () {
   const [locations, setLocations] = useState([])
   const [isTimerActive, setIsTimerActive] = useState(false)
   const [timer, setTimer] = useState(gameDuration)
-  const [ctc, setCtc] = useState('')
-  let acc;
-  let bal;
-
-  setAccount();
-  async function setAccount () {
-    acc = await reach.getDefaultAccount();
-    const balAtomic = await reach.balanceOf(acc);
-    bal = reach.formatCurrency(balAtomic, 4);
-  }
+  const [ctc, setCtc] = useState(null)
+  const [WRole, setWRole] = useState(null)
 
   function disconnect () {
     resetAll()
@@ -167,6 +160,8 @@ function App () {
               )
             : (
               <Connect
+                ctc={ctc}
+                setCtc={setCtc}
                 setGameMode={setGameMode}
                 connectionManager={connectionManager}
                 onDisconnect={onDisconnect}

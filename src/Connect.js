@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import Card from './Card'
+import Card from './Card';
+import {loadStdlib} from '@reach-sh/stdlib';
+import * as backend from './build/index.main.mjs';
+const stdlib = loadStdlib();
+
 
 export default function Connect (props) {
   const [playerName, setPlayerName] = useState('')
@@ -9,7 +13,13 @@ export default function Connect (props) {
   const [buttonText, setButtonText] = useState('🏠 Create Lobby')
   const [rounds, setRounds] = useState('')
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+    if (buttonText == '🏠 Create Lobby'){
+      const acc = await stdlib.getDefaultAccount();
+      const ctcAcc = acc.contract(backend);
+      const info = JSON.stringify(ctcAcc.getInfo(), null, 2);
+      props.setCtc = info;
+    }
     e.preventDefault()
     props.setGameMode(true)
     let pType;
@@ -24,7 +34,7 @@ export default function Connect (props) {
       wager,
       numPlayers,
       rounds,
-      pType,
+      props.ctc,
       props.onDisconnect,
       props.onMessageCallback
     )
