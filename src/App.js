@@ -57,17 +57,20 @@ function App () {
       startGame(data)
     } else if (type === 'session-created') {
       setGameMode(true)
+      console.log(data)
       if(data.playerType == 'Admin') {
-        const contract = acc.contract(backend)
-        setCtc(await contract.getInfo());
+        // const contract = acc.contract(backend)
+        // setCtc(await contract.getInfo());
+        setCtc('await contract.getInfo()');
         connectionManager.send('set-ctc', {
-          sessionId: data.sessionId,
           sessionCtc: ctc
         })
       } else {
-        setCtc(acc.contract(backend, JSON.parse(data.sessionCtc)))
+        // setCtc(acc.contract(backend, data.sessionCtc))
+        setCtc(data.sessionCtc);
       }
 
+      console.log(ctc)
       setError('')
       // TODO replace window.location.hash with ?code=
       window.location.hash = data.sessionId
