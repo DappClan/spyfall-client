@@ -1,7 +1,7 @@
 import io from 'socket.io-client'
 
 export default class ConnectionManager {
-  constructor () {
+  constructor (props) {
     this.socket = null
     this.initSocket()
   }
@@ -18,15 +18,16 @@ export default class ConnectionManager {
     }
   }
 
-  connect (playerName, sessionId, wager, numPlayers, rounds, connectionClosedCallback, onMessageCallback) {
+  connect (playerName, sessionId, wager, numPlayers, rounds, playerType, connectionClosedCallback, onMessageCallback) {
     this.initSocket()
     this.send('join-session', {
       sessionId: sessionId,
       playerName: playerName,
-      wager: wager,
-      numPlayers: numPlayers,
-      rounds: rounds,
-      game: 'spy'
+      sessionWager: wager,
+      sessionNumP: numPlayers,
+      sessionRounds: rounds,
+      playerType: playerType,
+      game: 'spy',
     })
 
     this.socket.on('disconnect', () => {

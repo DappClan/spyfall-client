@@ -8,9 +8,15 @@ import ConnectionManager from './connection-manager.js'
 import Locations from './Locations'
 import Menu from './Menu/Menu'
 import Error from './Error'
+import { loadStdlib, ALGO_MyAlgoConnect as MyAlgo } from '@reach-sh/stdlib'
+import * as backend from './build/index.main.mjs'
 
-const connectionManager = new ConnectionManager()
 const gameDuration = 300
+const reach = loadStdlib('ALGO')
+reach.setWalletFallback(reach.walletFallback({
+  providerEnv: 'LocalHost', MyAlgo }));
+
+const connectionManager = new ConnectionManager(reach)
 
 function App () {
   const [gameMode, setGameMode] = useState(false)
@@ -21,6 +27,16 @@ function App () {
   const [locations, setLocations] = useState([])
   const [isTimerActive, setIsTimerActive] = useState(false)
   const [timer, setTimer] = useState(gameDuration)
+  const [ctc, setCtc] = useState('')
+  let acc;
+  let bal;
+
+  setAccount();
+  async function setAccount () {
+    acc = await reach.getDefaultAccount();
+    const balAtomic = await reach.balanceOf(acc);
+    bal = reach.formatCurrency(balAtomic, 4);
+  }
 
   function disconnect () {
     resetAll()
@@ -32,7 +48,7 @@ function App () {
     setError('Connection to server closed')
   }
 
-  function onMessageCallback (type, data) {
+  async function onMessageCallback (type, data) {
     if (type === 'chat-event') {
       appendText(data.message, data.author, data.color)
     } else if (type === 'session-broadcast') {
@@ -40,9 +56,18 @@ function App () {
     } else if (type === 'start-game') {
       startGame(data)
     } else if (type === 'session-created') {
-      console.log('session created')
-      console.log(data)
       setGameMode(true)
+      if(data.playerType == 'Admin') {
+        const contract = acc.contract(backend)
+        setCtc(await contract.getInfo());
+        connectionManager.send('set-ctc', {
+          sessionId: data.sessionId,
+          sessionCtc: ctc
+        })
+      } else {
+        setCtc(acc.contract(backend, JSON.parse(data.sessionCtc)))
+      }
+
       setError('')
       // TODO replace window.location.hash with ?code=
       window.location.hash = data.sessionId
@@ -74,7 +99,7 @@ function App () {
     })
   }
 
-  function startGame (data) {
+  async function startGame (data) {
     window.scrollTo(0, 0)
     setChatContent([])
     setReadyCheck(false)

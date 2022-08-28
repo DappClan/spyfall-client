@@ -8,16 +8,23 @@ export default function Connect (props) {
   const [wager, setWager] = useState('')
   const [buttonText, setButtonText] = useState('🏠 Create Lobby')
   const [rounds, setRounds] = useState('')
+  const [playerType, setPlayerType] = useState('')
 
   const handleSubmit = (e) => {
     e.preventDefault()
     props.setGameMode(true)
+    if(buttonText == '🔌 Join Lobby') {
+      setPlayerType('Player')
+    } else {
+      setPlayerType('Admin')
+    }
     props.connectionManager.connect(
       playerName,
       lobbyID,
       wager,
       numPlayers,
       rounds,
+      playerType,
       props.onDisconnect,
       props.onMessageCallback
     )
