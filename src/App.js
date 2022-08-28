@@ -8,6 +8,9 @@ import ConnectionManager from './connection-manager.js'
 import Locations from './Locations'
 import Menu from './Menu/Menu'
 import Error from './Error'
+import {loadStdlib} from '@reach-sh/stdlib';
+import * as backend from './build/index.main.mjs';
+const stdlib = loadStdlib();
 
 const connectionManager = new ConnectionManager()
 const gameDuration = 300
@@ -21,6 +24,8 @@ function App () {
   const [locations, setLocations] = useState([])
   const [isTimerActive, setIsTimerActive] = useState(false)
   const [timer, setTimer] = useState(gameDuration)
+  const [ctc, setCtc] = useState(null)
+  const [WRole, setWRole] = useState(null)
 
   function disconnect () {
     resetAll()
@@ -139,6 +144,8 @@ function App () {
               )
             : (
               <Connect
+                ctc={ctc}
+                setCtc={setCtc}
                 setGameMode={setGameMode}
                 connectionManager={connectionManager}
                 onDisconnect={onDisconnect}
