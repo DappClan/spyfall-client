@@ -11,7 +11,7 @@ export default function GameSettings (props) {
       header='<i class="fas fa-cog"></i> Settings'
     >
       <LobbyCode lobbyStatus={props.lobbyStatus} />
-      <PlayersList lobbyStatus={props.lobbyStatus} />
+      <PlayersList lobbyStatus={props.lobbyStatus} player={props.player}/>
       <NewGameForm
         readyCheck={props.readyCheck}
         setReadyCheck={props.setReadyCheck}

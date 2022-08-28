@@ -30,6 +30,7 @@ function App () {
   const [timer, setTimer] = useState(gameDuration)
   const [ctc, setCtc] = useState(null)
   const [WRole, setWRole] = useState(null)
+  const [player, setPlayer] = useState(null)
 
   function disconnect () {
     resetAll()
@@ -103,16 +104,17 @@ function App () {
     setLocations(data.locations)
     resetClickableElements()
     setIsTimerActive(true)
+    setPlayer(data.client)
     appendText('Game started')
     if (data.spy) {
       appendText(
-        '🕵️ You are the spy, try to guess the current location',
+        '🕵️ You are the spy, try to guess the current location before the timer runs out.',
         null,
         'red'
       )
     } else {
       appendText(
-        `😇 You are not the spy, the location is ${data.location}`,
+        `😇 You are not the spy, the location is ${data.location}. Find the spy from the players list.`,
         null,
         'blue'
       )
@@ -149,8 +151,12 @@ function App () {
                   setTimer={setTimer}
                   gameDuration={gameDuration}
                 />
-                <Locations locations={locations} />
+                <Locations locations={locations} 
+                  player={player}
+                  connection={connectionManager}
+                />
                 <GameSettings
+                  player={player}
                   connectionManager={connectionManager}
                   disconnectCallback={disconnect}
                   readyCheck={readyCheck}

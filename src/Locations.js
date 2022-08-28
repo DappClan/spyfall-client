@@ -1,7 +1,16 @@
 import React from 'react'
 import Card from './Card'
 
-export default function Locations ({ locations }) {
+export default function Locations ({ locations, player, connection }) {
+  function handleVote(vote) {
+    if(player.isSpy) {
+      connection.send('vote-event', {
+        player: player,
+        vote:vote
+      })
+    }
+  }
+  
   if (locations && locations.length > 0) {
     return (
       <Card header='📍 Locations' hasBody={false}>
@@ -11,11 +20,7 @@ export default function Locations ({ locations }) {
               <li
                 key={i}
                 className='list-group-item list-group-item-action text-dark py-1'
-                onClick={(e) => {
-                  e.target.classList.contains('strike')
-                    ? e.target.classList.remove('strike')
-                    : e.target.classList.add('strike')
-                }}
+                onClick={(e) => {handleVote(e.target.key)}}
               >
                 {loc}
               </li>
