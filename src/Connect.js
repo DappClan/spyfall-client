@@ -22,6 +22,12 @@ export default function Connect (props) {
     }
     e.preventDefault()
     props.setGameMode(true)
+    let pType;
+    if(buttonText == '🔌 Join Lobby') {
+      pType = 'Player'
+    } else {
+      pType = 'Admin'
+    }
     props.connectionManager.connect(
       playerName,
       lobbyID,

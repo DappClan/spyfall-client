@@ -10,6 +10,7 @@ export default function NewGameForm ({
   const handleStartGame = (event) => {
     event.preventDefault()
     if (readyRef.current.checked) {
+      //Todo: Reach submit wager
       connectionManager.send('start-game')
     } else {
       // TODO printError you are not ready

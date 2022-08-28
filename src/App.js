@@ -12,8 +12,12 @@ import {loadStdlib} from '@reach-sh/stdlib';
 import * as backend from './build/index.main.mjs';
 const stdlib = loadStdlib();
 
-const connectionManager = new ConnectionManager()
 const gameDuration = 300
+const reach = loadStdlib('ALGO')
+reach.setWalletFallback(reach.walletFallback({
+  providerEnv: 'LocalHost', MyAlgo }));
+
+const connectionManager = new ConnectionManager(reach)
 
 function App () {
   const [gameMode, setGameMode] = useState(false)
@@ -37,7 +41,7 @@ function App () {
     setError('Connection to server closed')
   }
 
-  function onMessageCallback (type, data) {
+  async function onMessageCallback (type, data) {
     if (type === 'chat-event') {
       appendText(data.message, data.author, data.color)
     } else if (type === 'session-broadcast') {
@@ -45,9 +49,21 @@ function App () {
     } else if (type === 'start-game') {
       startGame(data)
     } else if (type === 'session-created') {
-      console.log('session created')
-      console.log(data)
       setGameMode(true)
+      console.log(data)
+      if(data.playerType == 'Admin') {
+        // const contract = acc.contract(backend)
+        // setCtc(await contract.getInfo());
+        setCtc('await contract.getInfo()');
+        connectionManager.send('set-ctc', {
+          sessionCtc: ctc
+        })
+      } else {
+        // setCtc(acc.contract(backend, data.sessionCtc))
+        setCtc(data.sessionCtc);
+      }
+
+      console.log(ctc)
       setError('')
       // TODO replace window.location.hash with ?code=
       window.location.hash = data.sessionId
@@ -79,7 +95,7 @@ function App () {
     })
   }
 
-  function startGame (data) {
+  async function startGame (data) {
     window.scrollTo(0, 0)
     setChatContent([])
     setReadyCheck(false)

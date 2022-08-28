@@ -1,7 +1,7 @@
 import io from 'socket.io-client'
 
 export default class ConnectionManager {
-  constructor () {
+  constructor (props) {
     this.socket = null
     this.initSocket()
   }
@@ -19,6 +19,7 @@ export default class ConnectionManager {
   }
 
   connect (playerName, sessionId, wager, numPlayers, rounds, ctc, connectionClosedCallback, onMessageCallback) {
+
     this.initSocket()
     this.send('join-session', {
       sessionId: sessionId,
