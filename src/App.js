@@ -8,14 +8,14 @@ import ConnectionManager from './connection-manager.js'
 import Locations from './Locations'
 import Menu from './Menu/Menu'
 import Error from './Error'
-import {loadStdlib} from '@reach-sh/stdlib';
+import {loadStdlib, ALGO_MyAlgoConnect as MyAlgo} from '@reach-sh/stdlib';
 import * as backend from './build/index.main.mjs';
-const stdlib = loadStdlib();
 
 const gameDuration = 300
-const reach = loadStdlib('ALGO')
+const reach = loadStdlib()
 reach.setWalletFallback(reach.walletFallback({
-  providerEnv: 'LocalHost', MyAlgo }));
+  providerEnv: 'LocalHost', MyAlgo }) 
+  );
 
 const connectionManager = new ConnectionManager(reach)
 
@@ -52,12 +52,13 @@ function App () {
       setGameMode(true)
       console.log(data)
       if(data.playerType == 'Admin') {
-        // const contract = acc.contract(backend)
-        // setCtc(await contract.getInfo());
-        setCtc('await contract.getInfo()');
-        connectionManager.send('set-ctc', {
-          sessionCtc: ctc
-        })
+        const acc = await reach.getDefaultAccount();
+        const ctcAcc = acc.contract(backend);
+        const info = JSON.stringify(ctcAcc.getInfo(), null, 2);
+        setCtc(info);
+        console.log('created acc');
+        console.log(acc);
+        console.log(info);
       } else {
         // setCtc(acc.contract(backend, data.sessionCtc))
         setCtc(data.sessionCtc);
@@ -160,8 +161,6 @@ function App () {
               )
             : (
               <Connect
-                ctc={ctc}
-                setCtc={setCtc}
                 setGameMode={setGameMode}
                 connectionManager={connectionManager}
                 onDisconnect={onDisconnect}
